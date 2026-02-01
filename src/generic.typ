@@ -3,7 +3,9 @@
 #let encode(data, barcode, options, quiet-zone: 0) = {
   let bytes = _plugin.encode(
     bytes(data),
+    bytes(if type(data) == str { "str" } else { "bytes" }),
     bytes(barcode),
+    cbor.encode(options),
   )
   let i16(index) = {
     let n = bytes.at(index + 1) * 256 + bytes.at(index)

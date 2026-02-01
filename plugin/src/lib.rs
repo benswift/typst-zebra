@@ -2,6 +2,7 @@ mod datamatrix;
 mod qrcode;
 
 use ::datamatrix::placement::PathSegment;
+use serde::de::DeserializeOwned;
 use wasm_minimal_protocol::{initiate_protocol, wasm_func};
 
 type Bitmap = ::datamatrix::placement::Bitmap<bool>;
@@ -9,15 +10,29 @@ type Bitmap = ::datamatrix::placement::Bitmap<bool>;
 initiate_protocol!();
 
 #[wasm_func]
-pub fn encode(data: &[u8], barcode: &[u8]) -> Result<Vec<u8>, String> {
+pub fn encode(
+    data: &[u8],
+    data_type: &[u8],
+    barcode: &[u8],
+    options: &[u8],
+) -> Result<Vec<u8>, String> {
+    let is_utf8 = match data_type {
+        b"bytes" => false,
+        b"str" => !data.is_ascii(),
+        _ => return Err("invalid data_type".to_string()),
+    };
     let bitmap = match barcode {
         // aztec
-        b"datamatrix" => datamatrix::Options::default().encode(data),
+        b"datamatrix" => cbor_read::<datamatrix::Options>(options)?.encode(data, is_utf8),
         // pdf417
-        b"qrcode" => qrcode::Options::default().encode(data),
+        b"qrcode" => cbor_read::<qrcode::Options>(options)?.encode(data, is_utf8),
         _ => return Err("invalid barcode".to_string()),
     }?;
     Ok(bitmap_to_path(&bitmap))
+}
+
+fn cbor_read<T: DeserializeOwned>(options: &[u8]) -> Result<T, String> {
+    ciborium::de::from_reader(options).map_err(|e| e.to_string())
 }
 
 fn bitmap_to_path(bitmap: &Bitmap) -> Vec<u8> {
@@ -70,11 +85,18 @@ mod tests {
 
     #[test]
     fn test_encode() {
-        assert!(encode(b"0", b"datamatrix").is_ok());
+        assert!(encode(b"0", b"str", b"datamatrix", &[0xA0]).is_ok());
     }
 
     #[test]
     fn test_errors() {
-        assert_eq!(encode(b"0", b"unknown").unwrap_err(), "invalid barcode");
+        assert_eq!(
+            encode(b"0", b"unknown", b"", b"").unwrap_err(),
+            "invalid data_type"
+        );
+        assert_eq!(
+            encode(b"0", b"str", b"unknown", b"").unwrap_err(),
+            "invalid barcode"
+        );
     }
 }

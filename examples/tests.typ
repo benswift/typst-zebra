@@ -15,11 +15,22 @@
     ),
   )
 }
+#let repeat(element, n) = range(0, n).map(_ => element)
 
 #case(
   name: "data: \"0\"",
   datamatrix("0"),
   qrcode("0"),
+)
+#case(
+  name: "data: bytes(\"ä\")",
+  datamatrix(bytes("ä")),
+  qrcode(bytes("ä")),
+)
+#case(
+  name: "data: \"ä\"",
+  datamatrix("ä"),
+  qrcode("ä"),
 )
 
 #case(
@@ -40,18 +51,25 @@
 )
 
 #case(
-  name: "width | height: 5em",
+  name: "width: 5em",
   datamatrix("0", width: 5em),
   datamatrix("0" * 100, width: 5em),
+  datamatrix("0", options: (symbols: "rect"), width: 5em),
+)
+#case(
+  name: "height: 5em",
   datamatrix("0", height: 5em),
   datamatrix("0" * 100, height: 5em),
+  datamatrix("0", options: (symbols: "rect"), height: 5em),
 )
 #case(
   name: "module-size: 0.1em | 0.2em",
   datamatrix("0", module-size: 0.1em),
   datamatrix("0" * 100, module-size: 0.1em),
+  datamatrix("0", options: (symbols: "rect"), module-size: 0.1em),
   datamatrix("0", module-size: 0.2em),
   datamatrix("0" * 100, module-size: 0.2em),
+  datamatrix("0", options: (symbols: "rect"), module-size: 0.2em),
 )
 
 #case(
@@ -91,7 +109,79 @@
   qrcode("1" * 1000),
 )
 #case(
-  name: "data: \"A\" * 1000",
-  datamatrix("A" * 1000),
-  qrcode("A" * 1000),
+  name: "data: bytes(repeat(255, 1000))",
+  datamatrix(bytes(repeat(255, 1000))),
+  qrcode(bytes(repeat(255, 1000))),
+)
+
+= datamatrix
+
+#case(
+  name: "encodation-type: none | ascii | base256",
+  datamatrix("0" * 16),
+  datamatrix("0" * 16, options: (encodation-type: "ascii")),
+  datamatrix("0" * 16, options: (encodation-type: "base256")),
+)
+#case(
+  name: "encodation-type: base256, data: \"0\" * 16 | bytes(repeat(255, 16))",
+  datamatrix("0" * 16, options: (encodation-type: "base256")),
+  datamatrix(bytes(repeat(255, 16)), options: (encodation-type: "base256")),
+)
+
+#case(
+  name: "symbols: rect | rect-8 | rect-ext | rect-ext-8 | rect-16 | rect-ext-26",
+  datamatrix("0", options: (symbols: "rect")),
+  datamatrix("0", options: (symbols: "rect-8")),
+  datamatrix("0", options: (symbols: "rect-ext")),
+  datamatrix("0", options: (symbols: "rect-ext-8")),
+  datamatrix("0", options: (symbols: "rect-16")),
+  datamatrix("0", options: (symbols: "rect-ext-26")),
+)
+#case(
+  name: "symbols: rect-8 | rect-ext-8 | rect | rect-ext, data: 0*",
+  datamatrix("0" * 8, options: (symbols: "rect-8")),
+  datamatrix("0" * 61, options: (symbols: "rect-ext-8")),
+  datamatrix("0" * 47, options: (symbols: "rect")),
+  datamatrix("0" * 116, options: (symbols: "rect-ext")),
+)
+
+= qrcode
+
+#case(
+  name: "version: micro, data: 0*, ec-level: l",
+  qrcode("0", options: (version: "micro", ec-level: "l")),
+  qrcode("0" * 6, options: (version: "micro", ec-level: "l")),
+  qrcode("0" * 11, options: (version: "micro", ec-level: "l")),
+)
+#case(
+  name: "version: micro, data: A*, ec-level: l",
+  qrcode("A", options: (version: "micro", ec-level: "l")),
+  qrcode("A" * 7, options: (version: "micro", ec-level: "l")),
+  qrcode("A" * 15, options: (version: "micro", ec-level: "l")),
+)
+#case(
+  name: "version: micro, data: 0, ec-level: l | m | q",
+  qrcode("0", options: (version: "micro", ec-level: "l")),
+  qrcode("0", options: (version: "micro", ec-level: "m")),
+  qrcode("0", options: (version: "micro", ec-level: "q")),
+)
+
+#case(
+  name: "mode: none | numeric | byte",
+  qrcode("0" * 16),
+  qrcode("0" * 16, options: (mode: "numeric")),
+  qrcode("0" * 16, options: (mode: "byte")),
+)
+#case(
+  name: "mode: byte, data: \"0\" * 16 | bytes(repeat(255, 16))",
+  qrcode("0" * 16, options: (mode: "byte")),
+  qrcode(bytes(repeat(255, 16)), options: (mode: "byte")),
+)
+
+#case(
+  name: "ec-level: l | m | q | h",
+  qrcode("0" * 35, options: (ec-level: "l")),
+  qrcode("0" * 35, options: (ec-level: "m")),
+  qrcode("0" * 35, options: (ec-level: "q")),
+  qrcode("0" * 35, options: (ec-level: "h")),
 )
