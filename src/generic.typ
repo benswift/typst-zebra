@@ -87,6 +87,7 @@
   }
 
   block(width: width, height: height, fill: background-fill, {
+    set align(top + left)
     scale((module-size / 1pt) * 100%, origin: top + left, {
       curve(
         fill: fill,

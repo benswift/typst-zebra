@@ -114,6 +114,16 @@
   qrcode(bytes(repeat(255, 1000))),
 )
 
+#case(
+  name: "align(*)",
+  ..(left + top, center + horizon, right + bottom)
+    .map(alignment => (
+      align(alignment, datamatrix("0")),
+      align(alignment, datamatrix("0", quiet-zone: 4)),
+    ))
+    .flatten(),
+)
+
 = datamatrix
 
 #case(
