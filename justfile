@@ -12,7 +12,7 @@ export default {
 default: fmt build test
 
 build:
-    cd plugin && cargo build --release --target wasm32-unknown-unknown
+    cd plugin && RUSTFLAGS="-Zunstable-options -Cpanic=immediate-abort" cargo +nightly -Zbuild-std=std build --release --target wasm32-unknown-unknown
     wasm-opt --enable-bulk-memory-opt -Oz -o src/zebra.wasm plugin/target/wasm32-unknown-unknown/release/typst_zebra.wasm
 
     typst compile --root . examples/readme-header.typ -f svg
