@@ -6,7 +6,7 @@ use serde::Deserialize;
 #[serde(rename_all = "kebab-case", deny_unknown_fields)]
 pub struct Options {
     #[serde(default)]
-    version: Version,
+    versions: Version,
     #[serde(default)]
     mode: Option<Mode>,
     #[serde(default)]
@@ -52,6 +52,17 @@ impl From<EcLevel> for qrcode::EcLevel {
 
 impl Options {
     pub fn encode(&self, data: &[u8], is_utf8: bool) -> Result<Bitmap, Error> {
+        let valid_characters = match self.mode {
+            None | Some(Mode::Byte) => true,
+            Some(Mode::Numeric) => data.iter().all(u8::is_ascii_digit),
+            Some(Mode::Alphanumeric) => data
+                .iter()
+                .all(|c| c.is_ascii_digit() || c.is_ascii_uppercase() || b" $%*+-./:".contains(c)),
+        };
+        if !valid_characters {
+            return Err(QrError::InvalidCharacter.into());
+        }
+
         let ec_level = self.ec_level.into();
         let try_encode = |version| -> Result<QrCode, QrError> {
             let mut bits = Bits::new(version);
@@ -68,13 +79,13 @@ impl Options {
             QrCode::with_bits(bits, ec_level)
         };
 
-        let max_version = match self.version {
+        let max_version = match self.versions {
             Version::Normal => 40,
             Version::Micro => 4,
         };
         let mut qrcode: Result<QrCode, QrError> = Err(QrError::InvalidVersion);
         for version in 1..=max_version {
-            let version = match self.version {
+            let version = match self.versions {
                 Version::Normal => qrcode::Version::Normal(version),
                 Version::Micro => qrcode::Version::Micro(version),
             };

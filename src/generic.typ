@@ -54,6 +54,13 @@
   background-fill: none,
   default-quiet-zone: 1,
 ) = context {
+  let options = options
+  for (key, value) in options.pairs() {
+    if value == none {
+      options.remove(key)
+    }
+  }
+
   let quiet-zone = if (quiet-zone == false or quiet-zone == none) {
     0
   } else if (quiet-zone == true) {
@@ -73,7 +80,7 @@
   if sizes.filter(x => x != auto).len() > 1 {
     panic("Specify at most one of width, height or module-size")
   } else if sizes.all(x => x == auto) {
-    module-size = 1mm
+    module-size = 3pt
   }
   if (width != auto) {
     module-size = width / path.width

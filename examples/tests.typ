@@ -34,6 +34,11 @@
 )
 
 #case(
+  name: "options: (unknown: none)",
+  datamatrix("0", options: (unknown: none)),
+)
+
+#case(
   name: "quiet-zone: true",
   datamatrix("0", quiet-zone: true),
   qrcode("0", quiet-zone: true),
@@ -158,22 +163,22 @@
 = qrcode
 
 #case(
-  name: "version: micro, data: 0*, ec-level: l",
-  qrcode("0", options: (version: "micro", ec-level: "l")),
-  qrcode("0" * 6, options: (version: "micro", ec-level: "l")),
-  qrcode("0" * 11, options: (version: "micro", ec-level: "l")),
+  name: "versions: micro, data: 0*, ec-level: l",
+  qrcode("0", options: (versions: "micro", ec-level: "l")),
+  qrcode("0" * 6, options: (versions: "micro", ec-level: "l")),
+  qrcode("0" * 11, options: (versions: "micro", ec-level: "l")),
 )
 #case(
-  name: "version: micro, data: A*, ec-level: l",
-  qrcode("A", options: (version: "micro", ec-level: "l")),
-  qrcode("A" * 7, options: (version: "micro", ec-level: "l")),
-  qrcode("A" * 15, options: (version: "micro", ec-level: "l")),
+  name: "versions: micro, data: A*, ec-level: l",
+  qrcode("A", options: (versions: "micro", ec-level: "l")),
+  qrcode("A" * 7, options: (versions: "micro", ec-level: "l")),
+  qrcode("A" * 15, options: (versions: "micro", ec-level: "l")),
 )
 #case(
-  name: "version: micro, data: 0, ec-level: l | m | q",
-  qrcode("0", options: (version: "micro", ec-level: "l")),
-  qrcode("0", options: (version: "micro", ec-level: "m")),
-  qrcode("0", options: (version: "micro", ec-level: "q")),
+  name: "versions: micro, data: 0, ec-level: l | m | q",
+  qrcode("0", options: (versions: "micro", ec-level: "l")),
+  qrcode("0", options: (versions: "micro", ec-level: "m")),
+  qrcode("0", options: (versions: "micro", ec-level: "q")),
 )
 
 #case(

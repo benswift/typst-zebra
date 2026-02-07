@@ -1,3 +1,4 @@
 /plugin/target
 /examples/*
 !/examples/*.typ
+!/examples/readme-*.svg
